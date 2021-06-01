@@ -1,72 +1,137 @@
-public class game {
-	private player1 p1 = new player1();
-	private player2 p2 = new player2();
-	
-	
-	
-	
-	public game() {
-		//initialize board with no members
-		// 0  = "O", 1 = "X", -1 = not yet filled
-		for(int i = 0; i<3; i++) {
-			for(int j = 0; j<3;j++) {
-				ticTacToe.board[i][j] = -1;
-			}
-			
-		}
-	}
-	public void drawLine(int[]row) {
-		String rowStr = "";
-		for(int i = 0; i<3; i++) {
-			if(row[i]==0) {
-				rowStr += "O ";
-			}
-			else if(row[i]==1) {
-				rowStr += "X ";
-			}
-			else
-				rowStr += "_ ";
-		}
-		System.out.println(rowStr);
-	}
-	public void drawBoard() {
-		System.out.println("current board: ");
+/**
+ * 
+ */
 
-		for(int i = 0; i<3; i++)
-			drawLine(ticTacToe.board[i]);
+/**
+ * @author abzaj
+ *
+ */
+public abstract class player {
+	
+
+	/**
+	 * 
+	 */
+	//constructor
+	public player() {
+		// TODO Auto-generated constructor stub
 		
 	}
 	
-	public void runGame() {
-		boolean firstPlayer = true;
-		boolean gameEnded = false;
-		while(!gameEnded) {
-			drawBoard();
-			int[] coords;
-			if(firstPlayer) {
-				coords = p1.readCoords();
-				p1.setCoords(coords[0], coords[1]);
-				if(p1.hasWon(ticTacToe.board, 1)) {
-					System.out.print("Player 1 has won.");
-					break;
-				}
-				firstPlayer = false;
-				
-			}
+	// reads a single coordinate value
+	public int readCoord(boolean isX)
+	{
+		String message;
+		if (isX)
+			message = getName() + new String(", input your X coordinate between 1 & 3");
+		else
+			message = getName() + new String(", Input your Y coordinate between 1 & 3");
+		System.out.println(message);
+		
+		String input = ticTacToe.CONSOLE.nextLine();
+		int coord = Integer.parseInt(input);
+		return coord;
+	}
+	
+	// reads a pair of X and Y coordinates
+	public int[] readXYCoords() {
+		int[] coordinates = new int[2];
+
+		boolean isValid = false;
+		// read X coordinate
+		while (!isValid) {
+			int coord = readCoord(true);
+			if (coord <1 || coord>3)
+				System.out.println("Try again. Number must be between 1 & 3");
 			else {
-				coords = p2.readCoords();
-				p2.setCoords(coords[0], coords[1]);
-				if(p2.hasWon(ticTacToe.board, 0)) {
-					System.out.print("Player 2 has won.");
-					break;
-				}
-				firstPlayer = true;
+				isValid = true;
+				coordinates[0] = coord-1;
 			}
 		}
 			
+		isValid = false;
+		// read Y coordinate
+		while (!isValid) {
+			int coord = readCoord(false);
+			if (coord <1 || coord>3)
+				System.out.println("Try again. Number must be between 1 & 3");
+			else {
+				isValid = true;
+				coordinates[1] = coord-1;
+			}
+		}
+		
+		return coordinates;
 	}
 	
-		
-		
-		
+	// reads coordinates and checks if they already exist
+	public int[] readCoords() {
+		int[] coordinates = null;
+
+		boolean cont = true;
+		while(cont)
+		{
+			coordinates = readXYCoords();
+			// check if input coordinates are already taken
+			if(ticTacToe.board[coordinates[0]][coordinates[1]] != -1) 
+				System.out.print("Position is taken, pick new coordinates");
+			else
+				cont = false;
+		}
+		return coordinates;
 	}
+	
+	public abstract void setCoords(int x, int y);
+	public abstract String getName();
+	
+	public boolean hasWon(int[][] coordinates, int value) {
+		//check all horizontal rows
+		for(int i = 0; i< 3; i++) {
+			boolean rowComplete = true;
+			for(int j = 0; j< 3; j++) {
+				if(coordinates[i][j] != value ) {
+					rowComplete = false; 
+					break;
+				}
+			}
+			if(rowComplete)
+				return true;
+		}
+		// check vertical columns
+		for(int j = 0; j< 3; j++) {
+			boolean colComplete = true;
+			for(int i = 0; i< 3; i++) {
+				if(coordinates[i][j] != value ) {
+					colComplete = false; 
+					break;
+				}
+			}
+			if(colComplete)
+				return true;
+		}
+		//check first (0,0 to 2,2) diagonal
+		boolean diagComplete = true;
+		for( int i = 0; i<3; i++) {
+			if(coordinates[i][i] != value) {
+				diagComplete = false;
+				break;
+			}
+		}
+		if(diagComplete)
+			return true;
+		//check second (2,0) to (0,2) diagonal
+		diagComplete = true;
+		int k = 0;
+		for(int i = 2; i>=0; i--) {
+				if(coordinates[i][k] != value) {
+					diagComplete = false;
+					break;
+				}
+				k++;
+		}
+		if(diagComplete)
+			return true;
+		return false;
+	}
+}
+	
