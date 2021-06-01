@@ -1,20 +1,21 @@
-public class player1 extends player {
 
-	public player1() {
+public class player2 extends player {
+
+	public player2() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public String getName()
 	{
-		return "Player1";
+		return "Player2";
 	}
 	
 	public void setCoords(int x, int y) {
-		//sets position to "X"
-		ticTacToe.board[x][y] = 1;
+		//sets position to "O"
+		ticTacToe.board[x][y] = 0;
 	}
 	public boolean hasWon(int[][] coordinates) {
-		return super.hasWon(coordinates, 1);
+		return super.hasWon(coordinates, 0);
 		
 	}
 }
